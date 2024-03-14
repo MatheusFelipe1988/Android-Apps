@@ -1,46 +1,41 @@
 package com.example.projectocean
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import javax.security.auth.callback.CallbackHandler
 
 class MainActivity : AppCompatActivity() {
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var btPost = findViewById<Button>(R.id.btPost)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://ocean-api-itens.onrender.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-        var tvTextView = findViewById<TextView>(R.id.tvText)
-
-        val editName = findViewById<EditText>(R.id.editName)
-
-
-
-        btPost.setOnClickListener {
-
-            if (editName.text.isNotBlank()) {
-                tvTextView.text = editName.text
-
-            } else {
-                editName.error = "erro "
+        val retrointer = retrofit.create(RetroInter::class.java)
+        retrointer.readingItens().enqueue(object : Callback<Array<Item>>{
+            override fun onResponse(call: Call<Array<Item>>, response: Response<Array<Item>>) {
+                response.body()?.let {
+                    Log.d("API", it.size.toString())
+                    it.forEach {
+                        Log.d("API","${it.imagem} - ${it.imagem}")
+                    }
+                }
             }
-        }
 
-        val btOpenWindows = findViewById<Button>(R.id.btOpenWindow)
-        btOpenWindows.setOnClickListener {
-            val newWindowIntent = Intent(this, ResultActivity::class.java)
-
-            newWindowIntent.putExtra("NAME_DIGITED", editName.text.toString())
-
-            startActivity(newWindowIntent)
-        }
+            override fun onFailure(call: Call<Array<Item>>, t: Throwable) {
+                Log.e("API", "Mensagem de erro",t)
+            }
+        })
 
     }
 }
