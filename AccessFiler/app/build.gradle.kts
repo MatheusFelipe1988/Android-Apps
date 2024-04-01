@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.vendor.accessfiler"
-    compileSdk = 34
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "com.vendor.accessfiler"
